@@ -27,6 +27,18 @@ merged <- rawdata %>%
   dplyr::left_join(fuel_fill %>% mutate(dummy = T)) %>% 
   dplyr::filter(date_time <= end_time & date_time >= start_time)
 
+merged2 <- merged %>% 
+  dplyr::select(date_time, start_time, end_time) %>% 
+  mutate(fill_indicator = 1)
+
+
+rawdata_final <- rawdata %>% 
+  dplyr::left_join(merged2, by = "date_time" ) %>% 
+  mutate(fill_indicator = if_else(is.na(fill_indicator), 0, 1))
+
+
+
+
 
 # Chapter 4: Detection of 'fill'
 
