@@ -41,6 +41,23 @@ rawdata_final <- rawdata %>%
 
 
 # Chapter 4: Detection of 'fill' -- To be Done
+numeic_col <- sapply(rawdata_final, is.numeric)
+train <- rawdata_final %>% dplyr::filter(date_time <= "2020-01-20 23:59:59")
+test <- rawdata_final %>% dplyr::filter(date_time > "2020-01-20 23:59:59")
+
+trainf <- train[,numeic_col]
+testf <- test[, numeic_col]
+
+library(randomForest)
+
+rf <- randomForest::randomForest(as.factor(fill_indicator) ~ ., data = trainf )
+
+
+
+
+
+
+
 
 
 
