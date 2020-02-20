@@ -14,7 +14,7 @@ fuel_fill$end_time <- lubridate::dmy_hm(fuel_fill$end_time, tz = Sys.timezone() 
 
 
 # Chapter 2: Raw data loading from sensor
-rawdata_path <- "D:/DS/Crane/Crane/NL01AA1712_ST_02-01-2020T02-27_ET_03-01-2020T02-27.csv"
+rawdata_path <- "D:/DS/Crane/Crane/NL01AA1712_ST_01-01-2020T00-00_ET_31-01-2020T00-00.csv"
 rawdata <- read.csv(rawdata_path)
 rawdata$date_time <- lubridate::dmy_hms(rawdata$Date.IST, tz = Sys.timezone())
 
