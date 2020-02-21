@@ -53,21 +53,25 @@ library(randomForest)
 rf <- randomForest::randomForest(as.factor(fill_indicator) ~ ., data = trainf )
 
 
+# Chapter 5: Rule based algorithm
+path <- "D:/DS/Crane/Crane"
+fivemins <- read.csv(file.path(path, "NL01AA1712_ST_01-01-2020T00-00_ET_07-01-2020T00-00_5mins.csv"))
+fivemins$Date.Time <- lubridate::dmy_hm(fivemins$Date.Time, tz = Sys.timezone() )
+
+
+ts.plot(fivemins$Fuel)
+lattice::xyplot(Fuel ~ Date.Time, fivemins, type = "l")
+
+# Cutoff based and mov-avg/var based
+fivemins2 <- fivemins %>% 
+  mutate(Fuel_lag = dplyr::lag(Fuel,k = 1)) %>% 
+  mutate(diff = Fuel - Fuel_lag, ind_fill = if_else(diff > 10,1,0)) %>% 
+  mutate(mov_var = rollapplyr(Fuel, 4, sd, fill = NA))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+ts.plot(fivemins2$mov_var)
+ts.plot(fivemins2$diff)
 
 
 
