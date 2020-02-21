@@ -74,12 +74,12 @@ fivemins2 <- fivemins %>%
   mutate(fill_indicator = if_else(is.na(fill_indicator), 0, 1))
 
 
-ts.plot(fivemins2$Fuel)
+ts.plot(fivemins3$Fuel)
 lattice::xyplot(Fuel ~ date_time, fivemins2, type = "l")
 
 # Cutoff based and mov-avg/var based
-lc <- 0.5 #lag cutoff
-mv <- 0.5 #movvar cutoff
+lc <- 10 #lag cutoff
+mv <- 20 #movvar cutoff
 
 fivemins3 <- fivemins2 %>% 
   mutate(Fuel_lag = dplyr::lag(Fuel,k = 1)) %>% 
