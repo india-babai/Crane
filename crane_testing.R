@@ -55,23 +55,38 @@ rf <- randomForest::randomForest(as.factor(fill_indicator) ~ ., data = trainf )
 
 # Chapter 5: Rule based algorithm
 path <- "D:/DS/Crane/Crane"
-fivemins <- read.csv(file.path(path, "NL01AA1712_ST_01-01-2020T00-00_ET_07-01-2020T00-00_5mins.csv"))
-fivemins$Date.Time <- lubridate::dmy_hm(fivemins$Date.Time, tz = Sys.timezone() )
+fivemins <- read.csv(file.path(path, "NL01AA1712_ST_01-01-2020T00-00_ET_07-01-2020T00-00_5mins.csv")) #five mins data
+fivemins$date_time <- lubridate::dmy_hm(fivemins$Date.Time, tz = Sys.timezone() )
 
 
-ts.plot(fivemins$Fuel)
-lattice::xyplot(Fuel ~ Date.Time, fivemins, type = "l")
+merged <- fivemins %>% 
+  mutate(dummy = T) %>% 
+  dplyr::left_join(fuel_fill %>% mutate(dummy = T)) %>% 
+  dplyr::filter(date_time <= end_time & date_time >= start_time)
+
+merged2 <- merged %>% 
+  dplyr::select(date_time, start_time, end_time) %>% 
+  mutate(fill_indicator = 1)
+
+
+fivemins2 <- fivemins %>% 
+  dplyr::left_join(merged2, by = "date_time" ) %>% 
+  mutate(fill_indicator = if_else(is.na(fill_indicator), 0, 1))
+
+
+ts.plot(fivemins2$Fuel)
+lattice::xyplot(Fuel ~ date_time, fivemins2, type = "l")
 
 # Cutoff based and mov-avg/var based
-fivemins2 <- fivemins %>% 
+fivemins3 <- fivemins2 %>% 
   mutate(Fuel_lag = dplyr::lag(Fuel,k = 1)) %>% 
-  mutate(diff = Fuel - Fuel_lag, ind_fill = if_else(diff > 10,1,0)) %>% 
+  mutate(diff = Fuel - Fuel_lag, ind_fill = if_else(diff > 5,1,0)) %>% 
   mutate(mov_var = rollapplyr(Fuel, 4, sd, fill = NA))
 
 
 
-ts.plot(fivemins2$mov_var)
-ts.plot(fivemins2$diff)
+ts.plot(fivemins3$mov_var)
+ts.plot(fivemins3$diff)
 
 
 
