@@ -78,17 +78,25 @@ ts.plot(fivemins2$Fuel)
 lattice::xyplot(Fuel ~ date_time, fivemins2, type = "l")
 
 # Cutoff based and mov-avg/var based
+lc <- 0.5 #lag cutoff
+mv <- 0.5 #movvar cutoff
+
 fivemins3 <- fivemins2 %>% 
   mutate(Fuel_lag = dplyr::lag(Fuel,k = 1)) %>% 
-  mutate(diff = Fuel - Fuel_lag, ind_fill = if_else(diff > 5,1,0)) %>% 
-  mutate(mov_var = rollapplyr(Fuel, 4, sd, fill = NA))
+  mutate(diff = Fuel - Fuel_lag, ind_fill_lag = if_else(diff > lc,1,0)) %>% 
+  mutate(mov_var = rollapplyr(Fuel, 4, sd, fill = NA)) %>% 
+  mutate(ind_fill_mov = if_else(mov_var > mv, 1 , 0))
 
+table(fivemins3$fill_indicator, fivemins3$ind_fill_lag)
+table(fivemins3$fill_indicator, fivemins3$ind_fill_mov)
 
 
 ts.plot(fivemins3$mov_var)
 ts.plot(fivemins3$diff)
 
 
+
+# checking if really detection is happennning
 
 
 
